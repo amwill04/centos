@@ -8,11 +8,11 @@
     "type": "nfs"
   }],
   "sites": [{
-    "map": "homestead.app",
+    "map": "test.app",
     "to": 8000,
     "root": "/home/vagrant/Test/hello.js"
   }],
   "databases": [
-    "insights"
+    "test"
   ]
 }

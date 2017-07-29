@@ -1,0 +1,76 @@
+# CentOS Node Development
+---
+
+Takes a lot of inspiration from [Homestead]. Allows easy provision of a Centos development environment allowing easy to configure nginx reverse proxy to multiple `node` apps.
+
+Simply edit `config.json` to requirments and add `uri` to hostsfile.
+
+## Requirments
+- [Vagrant]
+- [VirtualBox]
+
+## Usage
+```sh
+$ git clone https://bitbucket.org/aimia-i2c/centos
+$ cd centos
+$ vagrant up
+```
+
+## Config
+To configure vm adjust config file to suit.
+```json
+{
+  "ip": "192.168.33.10",
+  "memory": 2048,
+  "cpus": 1,
+  "folders": [{
+    "map": "~/git/Test",
+    "to": "/home/vagrant/Test",
+    "type": "nfs"
+  }],
+  "sites": [{
+    "map": "test.app",
+    "to": 8000,
+    "root": "/home/vagrant/Test/hello.js"
+  }],
+  "databases": [
+    "test"
+  ]
+}
+```
+
+### Config API
+#### ip
+Private IP addres of vm
+
+#### memory
+Provisioned RAM available
+
+#### cpus
+Number of provisioned cpus
+
+#### folders
+##### folders[map]
+Location of directory root of folder on host to be shared with guest
+##### folders[to]
+Location on guest box to sync to
+##### folders[type]
+Enable nfs (MacOS only)
+
+#### sites
+##### sites[map]
+url for nginx reverse proxy. Must be added to hostsfile `/private/etc/hosts` on MacOS mapped to ip address configured.
+##### sites[to]
+port number node app is configured to listen on. If running multiple sites from vm then each node app must be listening on different port numbers.
+
+##### siters[root]
+The entry point to you app. Full path must be provided.
+
+#### databases
+Array of databases to be provisioned. Useful if using migrations and seeders
+
+
+
+[Vagrant]: <https://www.vagrantup.com/>
+[VirtualBox]: <https://www.virtualbox.org/>
+[Homestead]: <https://github.com/laravel/homestead>
