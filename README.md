@@ -63,7 +63,7 @@ url for nginx reverse proxy. Must be added to hostsfile `/private/etc/hosts` on 
 ##### sites[to]
 port number node app is configured to listen on. If running multiple sites from vm then each node app must be listening on different port numbers.
 
-##### siters[root]
+##### sites[root]
 The entry point to you app. Full path must be provided.
 
 #### databases
