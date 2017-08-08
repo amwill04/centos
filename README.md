@@ -11,7 +11,7 @@ Simply edit `config.json` to requirments and add `uri` to hostsfile.
 
 ## Usage
 ```sh
-$ git clone https://bitbucket.org/aimia-i2c/centos
+$ git clone https://github.com/amwill04/centos.git
 $ cd centos
 $ vagrant up
 ```
