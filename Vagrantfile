@@ -5,6 +5,8 @@ require 'json'
 
 confDir = File.expand_path(File.dirname(__FILE__))
 configJSON = confDir + "/config.json"
+processJSON = confDir + "/process.json"
+bashProfile = confDir + "/.bash_profile"
 scriptDir = confDir + "/scripts"
 
 Vagrant.configure("2") do |config|
@@ -13,6 +15,12 @@ Vagrant.configure("2") do |config|
       settings = JSON.parse(File.read(configJSON))
   else
       abort "config.json not found in #{confDir}"
+  end
+
+  if File.exist? bashProfile then
+      settings = JSON.parse(File.read(configJSON))
+  else
+      abort ".bash_profile not found in #{confDir}"
   end
 
   config.vm.box = settings["box"] ||= "centos/7"
@@ -67,7 +75,13 @@ Vagrant.configure("2") do |config|
   # Install nano and wget
   config.vm.provision "shell" do |s|
       s.name = "Installing default programs."
-      s.inline = "sudo yum install wget nano gcc-c++ make -y 1>/dev/null"
+      s.inline = "sudo yum install wget nano gcc-c++ make epel-release -y 1>/dev/null"
+  end
+
+  # Update system
+  config.vm.provision "shell" do |s|
+      s.name = "Updating yum"
+      s.inline = "sudo yum update -y 1>/dev/null"
   end
 
   # Move nginx.conf file
@@ -113,17 +127,6 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # Start node apps
-  if settings.include? 'sites'
-    settings["sites"].each do |site|
-      config.vm.provision "shell" do |s|
-        s.name = "Start pm2 for " + site["map"]
-        s.privileged = false
-        s.inline = "pm2 start " + site["root"]
-      end
-    end
-  end
-
   # Start pm2 on start up
   config.vm.provision "shell" do |s|
     s.name = "Start pm2 on startup."
@@ -148,6 +151,54 @@ Vagrant.configure("2") do |config|
         s.name = "Creating " + db + " schema"
         s.path = scriptDir + "/create_schema.sh"
         s.args = db
+      end
+    end
+  end
+
+  # Install redis
+  config.vm.provision "shell" do |s|
+    s.name = "Install redis"
+    s.path = scriptDir + "/install_redis.sh"
+  end
+
+  # Remove bash_profile
+  config.vm.provision "shell" do |s|
+    s.name = "Remove bash_profile"
+    s.inline = "sudo rm /home/vagrant/.bash_profile"
+  end
+
+  # Create symlinks between .bash_profile and ~/
+  config.vm.provision "shell" do |s|
+    s.name = "Creating symlinks"
+    s.inline = "ln -sf /vagrant/.bash_profile /home/vagrant/.bash_profile"
+  end
+
+  # Stop and delete all pm2 sites
+  if settings.include? 'sites'
+      config.vm.provision "shell" do |s|
+        s.name = "Stop pm2"
+        s.privileged = false
+        s.inline = "pm2 delete all ||:"
+    end
+  end
+
+  # Start node apps
+  if settings.include? 'pm2'
+    if settings['pm2']
+      if File.exist? processJSON then
+          settings = JSON.parse(File.read(configJSON))
+      else
+          abort "process.json not found in #{confDir}"
+      end
+      # Create symlinks between process.json and ~/
+      config.vm.provision "shell" do |s|
+        s.name = "Creating symlinks"
+        s.inline = "ln -sf /vagrant/process.json /home/vagrant/process.json"
+      end
+        config.vm.provision "shell" do |s|
+          s.name = "Starting pm2"
+          s.privileged = false
+          s.inline = "pm2 start /home/vagrant/process.json"
       end
     end
   end
