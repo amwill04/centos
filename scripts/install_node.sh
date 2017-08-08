@@ -1,5 +1,7 @@
-curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash - 1>/dev/null
-sudo yum -y install nodejs 1>/dev/null
+if ! type node >/dev/null 2>&1 ; then
+  curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash - 1>/dev/null
+  sudo yum -y install nodejs 1>/dev/null
 
-# Install pm2
-sudo npm install -g pm2 1>/dev/null
+  # Install pm2
+  sudo npm install -g pm2 1>/dev/null
+fi

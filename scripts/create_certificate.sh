@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-mkdir /etc/nginx/ssl 1>/dev/null
+if [ ! -d /etc/nginx/ssl ]; then
+  mkdir /etc/nginx/ssl 1>/dev/null
+fi
 
 PATH_SSL="/etc/nginx/ssl"
 PATH_CNF="${PATH_SSL}/${1}.cnf"
