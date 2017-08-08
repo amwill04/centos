@@ -10,8 +10,8 @@
   "sites": [{
     "map": "test.app",
     "to": 8000,
-    "root": "/home/vagrant/Test/hello.js"
   }],
+  "pm2": false,
   "databases": [
     "test"
   ]
