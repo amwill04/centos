@@ -16,6 +16,32 @@ $ cd centos
 $ vagrant up
 ```
 
+## Included
+- Centos 7
+- Node v8.x
+- Nginx
+- MariaDB
+- Redis
+
+## .bash_profile
+Included in repo is .bash_profile that will sync with ~/.bash_profile.
+
+## pm2
+If is included `true` in `config.json` then and `process.json` file needs to be places in root. For further info on see [pm2].
+
+```json
+{
+  "apps" : [{
+    "name"        : "app",
+    "script"      : "/full/path/to/app.js",
+    "watch"       : true,
+    "env": {
+      "NODE_ENV": "development"
+    }
+  }]
+}
+```
+
 ## Config
 To configure vm adjust config file to suit.
 ```json
@@ -31,8 +57,8 @@ To configure vm adjust config file to suit.
   "sites": [{
     "map": "test.app",
     "to": 8000,
-    "root": "/home/vagrant/Test/hello.js"
   }],
+  "pm2": false,
   "databases": [
     "test"
   ]
@@ -74,3 +100,4 @@ Array of databases to be provisioned. Useful if using migrations and seeders
 [Vagrant]: <https://www.vagrantup.com/>
 [VirtualBox]: <https://www.virtualbox.org/>
 [Homestead]: <https://github.com/laravel/homestead>
+[pm2]: <http://pm2.keymetrics.io/>
